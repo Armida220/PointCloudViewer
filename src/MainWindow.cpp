@@ -11,17 +11,23 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFileInfoList>
+#include <include/MainWindow.h>
 
-#include "MainWindow.h"
+#include "Common.h"
+#include "ROSNode.h"
 #include "OSGWidget.h"
+#include "MainWindow.h"
 
-MainWindow::MainWindow(bool debug_mode, QWidget *parent) :
+bool g_is_debug_mode = false;
+
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     osgwidget_(nullptr),
     dock_widget_(nullptr),
     tree_widget_(nullptr),
     open_file_action(nullptr),
-    draw_line_action(nullptr) {
+    draw_line_action(nullptr),
+    ros_node_(nullptr) {
 
     this->setWindowTitle("PointCloudViewer");
     initUI();
@@ -29,7 +35,9 @@ MainWindow::MainWindow(bool debug_mode, QWidget *parent) :
     osgwidget_ = new OSGWidget(this);
     this->setCentralWidget(osgwidget_);
     osgwidget_->init();
-    createConnect();
+
+    if(g_is_debug_mode)
+        std::cout << "MainWindow Running on debug mode." << std::endl;
 }
 
 MainWindow::~MainWindow() = default;
@@ -85,14 +93,20 @@ void MainWindow::createDockWidget() {
 }
 
 void MainWindow::createConnect() {
-    //connect(osgwidget_->select_editor_, SIGNAL(selectItem(QStringList)), this, SLOT(receiveItem(QStringList)));
+    QObject::connect(ros_node_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
 }
 
 void MainWindow::openFile() {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Model"),
-            "/home/zhihui/workspace/data/osg_data", tr("Image Files (*.osg *.osgb)"));
+            "/home/zhihui/workspace/data/osg_data", tr("Image Files (*.osg *.osgt *.osgb)"));
     if(fileName.isEmpty()) return;
 
     QFileInfo f(fileName);
     osgwidget_->readDataFromFile(f);
+}
+
+void MainWindow::setRosNode(ROSNode *ros_node) {
+    ros_node_.reset(ros_node);
+
+    createConnect();
 }

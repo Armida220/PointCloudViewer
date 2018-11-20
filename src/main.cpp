@@ -1,14 +1,20 @@
 #include <QtWidgets/QApplication>
 #include <QtCore/QCommandLineOption>
 #include <QtCore/QCommandLineParser>
+#include <QtCore/QScopedPointer>
 
+#include "Common.h"
+#include "ROSNode.h"
 #include "MainWindow.h"
 
+//extern bool g_is_debug_mode;
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     QApplication::setApplicationName("PointCloudViewer");
     QApplication::setApplicationVersion("1.0.0");
+
+    qRegisterMetaType<PointArray>("PointArray");
 
     QCommandLineParser parser;
     parser.setApplicationDescription("a PointCloud data viewer for ros message.");
@@ -20,25 +26,28 @@ int main(int argc, char* argv[]) {
     parser.addOption({{"l", "listen"},
                        "listening tcp port number in server mode (default 8080)",
                        "portNo", "8080"});
-    parser.addOption({{"u", "url"},
-                       "fetch url data in client mode",
-                       "address", "http://www.google.com"});
-    parser.addOption({{"g", "geolocation"},
-                       "a city name [,country name] in weather mode, default: Tehran",
-                       "city", "Tehran"});
+    parser.addOption({{"t", "topic"},
+                       "subscribe ros topic for pc data",
+                       "name", "point_cloud_data"});
+    parser.addOption({{"q", "queuesize"},
+                       "ros topic queue size",
+                       "size", "1"});
     parser.process(app);
 
-    bool is_debug_mode = false;
     QStringList posArgs = parser.positionalArguments();
     if ( !posArgs.isEmpty() ) {
         const auto &mode = posArgs.at(0);
         if (mode == QLatin1Literal("debug")) {
-            is_debug_mode = true;
+            g_is_debug_mode = true;
         }
     }
 
-    MainWindow main_window(is_debug_mode);
+    QScopedPointer<ROSNode> ros_node(new ROSNode(argc, argv));
+    ros_node->init(parser.value("topic").toStdString(), parser.value("queuesize").toUInt());
+
+    MainWindow main_window;
     main_window.setGeometry(100, 100, 1500, 800);  //graphic_context bugs!
+    main_window.setRosNode(ros_node.take());
     main_window.show();
 
     return app.exec();

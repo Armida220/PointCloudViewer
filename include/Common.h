@@ -21,13 +21,26 @@
 #define POINTCLOUDVIEWER_COMMON_H
 
 #include <string>
+#include <vector>
 #include <iostream>
 
 #include <osg/Vec3d>
+#include <osg/Array>
 
 const char root_node_name[] = "root_node";
 const char point_cloud_node_name[] = "point_cloud_node";
 const char helper_node_name[] = "helper_node";
+
+struct Point {
+    double x, y, z;
+    Point() {
+        x = y = z = 0;
+    }
+};
+
+struct PointArray {
+    std::vector<Point> data;
+};
 
 inline std::ostream &operator<<( std::ostream &output, const osg::Vec3d &p )
 {

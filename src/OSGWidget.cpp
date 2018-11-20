@@ -24,11 +24,12 @@
 #include <include/OSGWidget.h>
 
 #include "Tracer.h"
-#include "Common.h"
 #include "OSGWidget.h"
 #include "NodeCallback.h"
 #include "NodeTreeInfo.h"
 #include "NodeTreeSearch.h"
+
+extern bool g_is_debug_mode;
 
 OSGWidget::OSGWidget(QWidget* parent):
     QWidget(parent),
@@ -36,6 +37,8 @@ OSGWidget::OSGWidget(QWidget* parent):
     root_node_(nullptr),
     update_timer_(new QTimer){
 
+    if(g_is_debug_mode)
+        std::cout << "OSGWidget Running on debug mode." << std::endl;
 }
 
 OSGWidget::~OSGWidget() = default;
@@ -217,5 +220,9 @@ osg::Geode *OSGWidget::calculateBBoxForModel(osg::Node *node) const {
     geode->addDrawable(drawable);
 
     return geode.release();
+}
 
+void OSGWidget::updatePointCloud(PointArray points) {
+    TRACER;
+    //TODO : PointArray copy check
 }

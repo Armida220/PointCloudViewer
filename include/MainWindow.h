@@ -26,15 +26,22 @@
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QLabel>
+#include <QtCore/QScopedPointer>
+
+//global variable declaration
+extern bool g_is_debug_mode;
 
 //forward declaration
 class OSGWidget;
+class ROSNode;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
-    explicit MainWindow(bool debug_mode = false, QWidget* parent = nullptr);
+    explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow() final;
+
+    void setRosNode(ROSNode* ros_node);
 
     Q_DISABLE_COPY(MainWindow);
 private:
@@ -54,6 +61,8 @@ private:
     //items
     QAction*   open_file_action;
     QAction*   draw_line_action;
+
+    QScopedPointer<ROSNode> ros_node_;
 public Q_SLOTS:
     void openFile();
 };

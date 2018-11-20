@@ -38,6 +38,8 @@
 #include <osgGA/TerrainManipulator>
 #include <osgQt/GraphicsWindowQt>
 
+#include "Common.h"
+
 class OSGWidget : public QWidget, public osgViewer::CompositeViewer {
     Q_OBJECT
 public:
@@ -65,8 +67,9 @@ private:
     osg::ref_ptr<osg::Switch>      root_node_;
 
     QScopedPointer<QTimer> update_timer_;
-public Q_SLOTS:
 
+public Q_SLOTS:
+    void updatePointCloud(PointArray);
 };
 
 

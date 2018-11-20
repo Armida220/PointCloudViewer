@@ -20,9 +20,38 @@
 #ifndef POINTCLOUDVIEWER_ROSNODE_H
 #define POINTCLOUDVIEWER_ROSNODE_H
 
+#include <string>
 
-class ROSNode {
+#include <ros/ros.h>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/PoseArray.h>
 
+#include <QtCore/QThread>
+#include <QtCore/QString>
+
+#include <Common.h>
+
+class ROSNode : public QThread {
+    Q_OBJECT
+public:
+    ROSNode(int argc, char **argv);
+    ~ROSNode() final;
+
+    bool init(const std::string& topic, unsigned int queue_size);
+
+    Q_DISABLE_COPY(ROSNode)
+protected:
+    void run() final;
+
+private:
+    void callbackGetPointCloudData(const geometry_msgs::PoseArray& msg);
+
+    int init_argc;
+    char **init_argv;
+
+    ros::Subscriber point_cloud_data_sub;
+Q_SIGNALS:
+    void emitPointCloud(PointArray);
 };
 
 
