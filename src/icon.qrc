@@ -1,0 +1,7 @@
+<RCC>
+    <qresource>
+        <file>images/icon.ico</file>
+        <file>images/file_open.png</file>
+        <file>images/file_save.png</file>
+    </qresource>
+</RCC>
