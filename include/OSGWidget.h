@@ -57,6 +57,7 @@ private:
     void initSceneGraph();
     void initCamera();
     void initHelperNode();
+    osg::Camera* createHUD();
 
     osgQt::GraphicsWindowQt* createGraphicsWindow(int x, int y, int w, int h, const std::string& name = "",
             bool windowDecoration = false) const;
@@ -65,6 +66,7 @@ private:
 
     osg::ref_ptr<osgViewer::View>  main_view_;
     osg::ref_ptr<osg::Switch>      root_node_;
+    osg::ref_ptr<osg::Switch>      text_node_;
 
     QScopedPointer<QTimer> update_timer_;
 

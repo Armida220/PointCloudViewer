@@ -24,6 +24,7 @@
 #include <iostream>
 
 #include <osg/Node>
+#include <osg/Geode>
 #include <osg/Switch>
 #include <osg/PositionAttitudeTransform>
 #include <osg/NodeVisitor>
@@ -46,6 +47,15 @@ public:
     }
 
     void apply(osg::PositionAttitudeTransform &search_node) override
+    {
+        if(search_node.getName() == name_)
+        {
+            node_ = &search_node;
+        }
+        traverse(search_node);
+    }
+
+    void apply(osg::Geode &search_node) override
     {
         if(search_node.getName() == name_)
         {

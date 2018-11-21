@@ -31,6 +31,9 @@
 const char root_node_name[] = "root_node";
 const char point_cloud_node_name[] = "point_cloud_node";
 const char uav_node_name[] = "uav_node";
+const char hud_node_name[] = "hud_node";
+const char text_node_name[] = "text_node";
+const char positon_geode_name[] = "positon_geode";
 const char helper_node_name[] = "helper_node";
 
 const double g_utm_x = 198078;

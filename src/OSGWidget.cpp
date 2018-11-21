@@ -35,6 +35,7 @@ OSGWidget::OSGWidget(QWidget* parent):
     QWidget(parent),
     main_view_(nullptr),
     root_node_(nullptr),
+    text_node_(nullptr),
     update_timer_(new QTimer){
 
     if(g_is_debug_mode)
@@ -79,6 +80,15 @@ void OSGWidget::initSceneGraph() {
         uav_node->addChild(geode);
     }
     root_node_->addChild(uav_node);
+
+    osg::ref_ptr<osg::Camera> hud_node = createHUD();
+    hud_node->setName(hud_node_name);
+    {
+        text_node_ = new osg::Switch;
+        text_node_->setName(text_node_name);
+        hud_node->addChild(text_node_);
+    }
+    root_node_->addChild(hud_node);
 
     osg::ref_ptr<osg::Switch> helper_node = new osg::Switch;
     helper_node->setName(helper_node_name);
@@ -273,4 +283,44 @@ void OSGWidget::updateUAVPose(Point pos) {
     position.z() = pos.z;
 
     uav_node->setPosition(position);
+
+    QString position_str = QString::number(pos.x) + "," +
+                          QString::number(pos.y) + "," +
+                          QString::number(pos.z);
+    //update text
+    {
+        text_node_->removeChildren(0, text_node_->getNumChildren());
+
+        osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+        geode->setName(positon_geode_name);
+        // turn lighting off for the text and disable depth test to ensure it's always on top.
+        osg::ref_ptr<osg::StateSet> state_set = geode->getOrCreateStateSet();
+        state_set->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+
+        //position
+        {
+            osg::Vec3 position(20.0f,20.0f,0.0f);
+
+            osg::ref_ptr<osgText::Text> text = new osgText::Text;
+            geode->addDrawable( text );
+
+            text->setPosition(position);
+            text->setCharacterSize(20);
+            text->setText("Positon: " + position_str.toStdString());
+        }
+        text_node_->addChild(geode);
+    }
+}
+
+osg::Camera *OSGWidget::createHUD() {
+    osg::ref_ptr<osg::Camera> camera = new osg::Camera;
+
+    camera->setProjectionMatrix(osg::Matrix::ortho2D(0,1280,0,1024));
+    camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+    camera->setViewMatrix(osg::Matrix::identity());
+    camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    camera->setRenderOrder(osg::Camera::POST_RENDER);
+    camera->setAllowEventFocus(false);
+
+    return camera.release();
 }
