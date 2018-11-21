@@ -11,6 +11,7 @@ set(CMAKE_PREFIX_PATH "/usr/lib64;/opt/ros/kinetic;${CMAKE_PREFIX_PATH}")
 find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
+find_package(Qt5Network CONFIG REQUIRED)
 qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
 find_package(OpenSceneGraph 3.2 REQUIRED COMPONENTS osgGA osgViewer osgDB osgUtil osg osgQt osgFX)
 find_package(PCL REQUIRED)
@@ -18,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
         std_msgs
+        nav_msgs
         sensor_msgs
         message_generation
         )
@@ -43,5 +45,7 @@ target_link_libraries(${PROJECT_NAME}
         ${PCL_LIBRARIES}
         Qt5::Widgets
         Qt5::Core
+        Qt5::Gui
+        Qt5::Network
         )
 #qt5_use_modules(${PROJECT_NAME} Core Widgets OpenGL Xml Gui)

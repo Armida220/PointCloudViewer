@@ -69,6 +69,7 @@ private:
     QScopedPointer<QTimer> update_timer_;
 
 public Q_SLOTS:
+    void updateUAVPose(Point);
     void updatePointCloud(PointArray);
 };
 

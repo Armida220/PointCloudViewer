@@ -17,44 +17,30 @@
  * limitations under the License.
 */
 
-#ifndef POINTCLOUDVIEWER_ROSNODE_H
-#define POINTCLOUDVIEWER_ROSNODE_H
+#ifndef POINTCLOUDVIEWER_NETWORKMANAGER_H
+#define POINTCLOUDVIEWER_NETWORKMANAGER_H
 
-#include <string>
+#include <QtCore/QObject>
+#include <QtNetwork/QUdpSocket>
 
-#include <ros/ros.h>
-#include <nav_msgs/Odometry.h>
-#include <sensor_msgs/PointCloud2.h>
+#include "Common.h"
 
-#include <QtCore/QThread>
-#include <QtCore/QString>
-
-#include <Common.h>
-
-class ROSNode : public QThread {
+class NetworkManager : public QObject {
     Q_OBJECT
 public:
-    ROSNode(int argc, char **argv);
-    ~ROSNode() final;
+    explicit NetworkManager(QObject* parent = nullptr);
+    ~NetworkManager() final;
 
-    bool init(const std::string& topic, unsigned int queue_size);
+    void setPortNum(unsigned short port_num);
 
-    Q_DISABLE_COPY(ROSNode)
-protected:
-    void run() final;
-
+    Q_DISABLE_COPY(NetworkManager);
 private:
-    void callbackGetPointCloudData(const sensor_msgs::PointCloud2ConstPtr& msg);
-    void callbackGetUAVPose(const nav_msgs::Odometry& msg);
-
-    int init_argc;
-    char **init_argv;
-
-    ros::Subscriber point_cloud_data_sub;
+    QScopedPointer<QUdpSocket> socket_;
 Q_SIGNALS:
     void emitPointCloud(PointArray);
-    void emitUAVPos(Point);
+private Q_SLOTS:
+    void getPointCloudData();
 };
 
 
-#endif //POINTCLOUDVIEWER_ROSNODE_H
+#endif //POINTCLOUDVIEWER_NETWORKMANAGER_H

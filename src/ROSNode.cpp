@@ -1,6 +1,8 @@
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <include/ROSNode.h>
+
 
 #include "ROSNode.h"
 #include "Tracer.h"
@@ -30,7 +32,7 @@ bool ROSNode::init(const std::string& topic, unsigned int queue_size) {
 
     ros::NodeHandle nodeHandle;
 
-    point_cloud_data_sub = nodeHandle.subscribe(topic, queue_size, &ROSNode::callbackGetPointCloudData, this);
+    point_cloud_data_sub = nodeHandle.subscribe(topic, queue_size, &ROSNode::callbackGetUAVPose, this);
 
     std::cout << "RosNode init with topic: " << topic << " and queue size: " << queue_size << std::endl;
     //start thread
@@ -58,4 +60,21 @@ void ROSNode::callbackGetPointCloudData(const sensor_msgs::PointCloud2ConstPtr& 
     if(points.isEmpty()) return;
 
     emit emitPointCloud(points);
+}
+
+void ROSNode::callbackGetUAVPose(const nav_msgs::Odometry &msg) {
+    const std::string& frame_id = msg.header.frame_id;
+
+    Point position;
+    position.x = msg.pose.pose.position.x;
+    position.y = msg.pose.pose.position.y;
+    position.z = msg.pose.pose.position.z;
+
+    osg::Vec4d orientation;
+    orientation.x() = msg.pose.pose.orientation.x;
+    orientation.y() = msg.pose.pose.orientation.y;
+    orientation.z() = msg.pose.pose.orientation.z;
+    orientation.w() = msg.pose.pose.orientation.w;
+
+    emit emitUAVPos(position);
 }

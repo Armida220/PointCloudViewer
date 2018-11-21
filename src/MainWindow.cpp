@@ -17,6 +17,7 @@
 #include "ROSNode.h"
 #include "OSGWidget.h"
 #include "MainWindow.h"
+#include "NetworkManager.h"
 
 bool g_is_debug_mode = false;
 
@@ -27,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     tree_widget_(nullptr),
     open_file_action(nullptr),
     draw_line_action(nullptr),
-    ros_node_(nullptr) {
+    ros_node_(nullptr),
+    network_manager_(nullptr) {
 
     this->setWindowTitle("PointCloudViewer");
     initUI();
@@ -52,8 +54,6 @@ void MainWindow::createMenu() {
     open_file_action = new QAction("Open", this);
     open_file_action->setIcon(QIcon(":/images/file_open.png"));
     connect(open_file_action, SIGNAL(triggered()), this, SLOT(openFile()));
-
-
 }
 
 void MainWindow::createToolBar() {
@@ -62,7 +62,6 @@ void MainWindow::createToolBar() {
     toolBar->addSeparator();
 
     //toolBar->addAction(draw_line_action);
-    toolBar->addSeparator();
 }
 
 void MainWindow::createDockWidget() {
@@ -93,7 +92,9 @@ void MainWindow::createDockWidget() {
 }
 
 void MainWindow::createConnect() {
+    QObject::connect(ros_node_.data(), SIGNAL(emitUAVPos(Point)), osgwidget_, SLOT(updateUAVPose(Point)));
     QObject::connect(ros_node_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
+    QObject::connect(network_manager_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
 }
 
 void MainWindow::openFile() {
@@ -107,6 +108,8 @@ void MainWindow::openFile() {
 
 void MainWindow::setRosNode(ROSNode *ros_node) {
     ros_node_.reset(ros_node);
+}
 
-    createConnect();
+void MainWindow::setNetworkManager(NetworkManager *network_manager) {
+    network_manager_.reset(network_manager);
 }

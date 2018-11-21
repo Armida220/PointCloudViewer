@@ -25,6 +25,7 @@
 
 #include <osg/Node>
 #include <osg/Switch>
+#include <osg/PositionAttitudeTransform>
 #include <osg/NodeVisitor>
 
 class NodeTreeSearch: public osg::NodeVisitor {
@@ -36,6 +37,15 @@ public:
     }
 
     void apply(osg::Switch &search_node) override
+    {
+        if(search_node.getName() == name_)
+        {
+            node_ = &search_node;
+        }
+        traverse(search_node);
+    }
+
+    void apply(osg::PositionAttitudeTransform &search_node) override
     {
         if(search_node.getName() == name_)
         {

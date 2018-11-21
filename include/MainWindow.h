@@ -34,6 +34,7 @@ extern bool g_is_debug_mode;
 //forward declaration
 class OSGWidget;
 class ROSNode;
+class NetworkManager;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -42,6 +43,8 @@ public:
     ~MainWindow() final;
 
     void setRosNode(ROSNode* ros_node);
+    void setNetworkManager(NetworkManager* network_manager);
+    void createConnect();
 
     Q_DISABLE_COPY(MainWindow);
 private:
@@ -49,7 +52,6 @@ private:
     void createMenu();
     void createToolBar();
     void createDockWidget();
-    void createConnect();
 
     //core widget
     OSGWidget*      osgwidget_;
@@ -63,6 +65,7 @@ private:
     QAction*   draw_line_action;
 
     QScopedPointer<ROSNode> ros_node_;
+    QScopedPointer<NetworkManager> network_manager_;
 public Q_SLOTS:
     void openFile();
 };

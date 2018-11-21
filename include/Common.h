@@ -30,7 +30,12 @@
 
 const char root_node_name[] = "root_node";
 const char point_cloud_node_name[] = "point_cloud_node";
+const char uav_node_name[] = "uav_node";
 const char helper_node_name[] = "helper_node";
+
+const double g_utm_x = 198078;
+const double g_utm_y = 2.50364e6;
+
 
 struct Point {
     double x, y, z;

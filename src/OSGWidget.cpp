@@ -66,12 +66,24 @@ void OSGWidget::initSceneGraph() {
     point_cloud_node->setName(point_cloud_node_name);
     root_node_->addChild(point_cloud_node);
 
+    osg::ref_ptr<osg::PositionAttitudeTransform> uav_node = new osg::PositionAttitudeTransform;
+    uav_node->setName(uav_node_name);
+    {
+        osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+        geode->setName("UAV");
+
+        osg::ref_ptr<osg::ShapeDrawable> point_sphere = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3d(), 1.5f));
+        point_sphere->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
+        geode->addDrawable(point_sphere);
+
+        uav_node->addChild(geode);
+    }
+    root_node_->addChild(uav_node);
+
     osg::ref_ptr<osg::Switch> helper_node = new osg::Switch;
     helper_node->setName(helper_node_name);
     root_node_->addChild(helper_node);
-
 }
-
 
 void OSGWidget::initCamera() {
     osgViewer::ViewerBase::ThreadingModel threadingModel = osgViewer::ViewerBase::SingleThreaded;
@@ -224,6 +236,7 @@ osg::Geode *OSGWidget::calculateBBoxForModel(osg::Node *node) const {
 }
 
 void OSGWidget::updatePointCloud(PointArray points) {
+    //TRACER;
     static osg::ref_ptr<osg::Switch> point_cloud_node = dynamic_cast<osg::Switch*>(
             NodeTreeSearch::findNodeWithName(root_node_, point_cloud_node_name));
 
@@ -245,7 +258,19 @@ void OSGWidget::updatePointCloud(PointArray points) {
     geode->addDrawable(geom);
     point_cloud_node->addChild(geode);
 
-    if(point_cloud_node->getNumChildren() >= 2000) {
+    if(point_cloud_node->getNumChildren() >= 10000) {
         point_cloud_node->removeChildren(0, 1000);
     }
+}
+
+void OSGWidget::updateUAVPose(Point pos) {
+    static osg::ref_ptr<osg::PositionAttitudeTransform> uav_node = dynamic_cast<osg::PositionAttitudeTransform*>(
+            NodeTreeSearch::findNodeWithName(root_node_, uav_node_name));
+
+    osg::Vec3d position;
+    position.x() = pos.x - g_utm_x;
+    position.y() = pos.y - g_utm_y;
+    position.z() = pos.z;
+
+    uav_node->setPosition(position);
 }
