@@ -104,6 +104,7 @@ void OSGWidget::initCamera() {
     }
 
     main_view_->addEventHandler(new osgViewer::StatsHandler);
+    main_view_->addEventHandler(new NodeTreeHandler(root_node_));
     main_view_->setSceneData(root_node_.get());
     main_view_->setCameraManipulator(new osgGA::TrackballManipulator);
 
@@ -223,6 +224,28 @@ osg::Geode *OSGWidget::calculateBBoxForModel(osg::Node *node) const {
 }
 
 void OSGWidget::updatePointCloud(PointArray points) {
-    TRACER;
-    //TODO : PointArray copy check
+    static osg::ref_ptr<osg::Switch> point_cloud_node = dynamic_cast<osg::Switch*>(
+            NodeTreeSearch::findNodeWithName(root_node_, point_cloud_node_name));
+
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+    osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+    osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+    osg::ref_ptr<osg::Vec3Array> colors = new osg::Vec3Array;
+
+    for(const auto& p : points) {
+        vertices->push_back(osg::Vec3d(p.x, p.y, p.z));
+    }
+    colors->push_back(osg::Vec3(1, 1, 1));
+
+    geom->setVertexArray(vertices);
+    geom->setColorArray(colors);
+    geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, vertices->size()));
+
+    geode->addDrawable(geom);
+    point_cloud_node->addChild(geode);
+
+    if(point_cloud_node->getNumChildren() >= 2000) {
+        point_cloud_node->removeChildren(0, 1000);
+    }
 }

@@ -21,8 +21,9 @@
 #define POINTCLOUDVIEWER_COMMON_H
 
 #include <string>
-#include <vector>
 #include <iostream>
+
+#include <QVector>
 
 #include <osg/Vec3d>
 #include <osg/Array>
@@ -36,11 +37,13 @@ struct Point {
     Point() {
         x = y = z = 0;
     }
+
+    Point(double x_, double y_, double z_) {
+        x = x_; y = y_; z = z_;
+    }
 };
 
-struct PointArray {
-    std::vector<Point> data;
-};
+typedef QVector<Point> PointArray;
 
 inline std::ostream &operator<<( std::ostream &output, const osg::Vec3d &p )
 {

@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
                        "name", "point_cloud_data"});
     parser.addOption({{"q", "queuesize"},
                        "ros topic queue size",
-                       "size", "1"});
+                       "num", "1"});
     parser.process(app);
 
     QStringList posArgs = parser.positionalArguments();

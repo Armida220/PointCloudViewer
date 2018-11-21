@@ -23,8 +23,7 @@
 #include <string>
 
 #include <ros/ros.h>
-#include <geometry_msgs/Point.h>
-#include <geometry_msgs/PoseArray.h>
+#include <sensor_msgs/PointCloud2.h>
 
 #include <QtCore/QThread>
 #include <QtCore/QString>
@@ -44,7 +43,7 @@ protected:
     void run() final;
 
 private:
-    void callbackGetPointCloudData(const geometry_msgs::PoseArray& msg);
+    void callbackGetPointCloudData(const sensor_msgs::PointCloud2ConstPtr& msg);
 
     int init_argc;
     char **init_argv;

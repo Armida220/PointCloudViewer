@@ -13,16 +13,21 @@ find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
 qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
 find_package(OpenSceneGraph 3.2 REQUIRED COMPONENTS osgGA osgViewer osgDB osgUtil osg osgQt osgFX)
+find_package(PCL REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
         roscpp
         rospy
         std_msgs
-        message_generation)
+        sensor_msgs
+        message_generation
+        )
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
         ${OPENSCENEGRAPH_INCLUDE_DIRS}
-        ${catkin_INCLUDE_DIRS})
+        ${catkin_INCLUDE_DIRS}
+        ${PCL_INCLUDE_DIRS}
+        )
 
 file(GLOB HEAD_FILES "include/*.h")
 aux_source_directory(src SOURCE_FILES)
@@ -35,6 +40,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
         ${OPENSCENEGRAPH_LIBRARIES}
         ${catkin_LIBRARIES}
+        ${PCL_LIBRARIES}
         Qt5::Widgets
         Qt5::Core
         )
