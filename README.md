@@ -11,6 +11,10 @@ A UAV real-time point cloud display software developed by Shenzhen Zhihui Techno
 The software is written by C++ under Linux. 
 Using Qt and OSG to build the interface, it can render the compressed point cloud in the UDP packet and display the status of the drone in real time.
 
+#### Display
+
+![PointCloudViewer 展示](img/test.png)
+
 #### Prerequisites
 1. PCL
 2. Ros
