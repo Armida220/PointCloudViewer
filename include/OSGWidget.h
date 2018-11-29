@@ -63,6 +63,7 @@ private:
             bool windowDecoration = false) const;
     osg::Node* readPCLDataFromFile(const QFileInfo& file_info) const;
     osg::Geode* calculateBBoxForModel(osg::Node* node) const;
+    osg::Vec3d calculateColorForPoint(const osg::Vec3d& point) const;
 
     osg::ref_ptr<osgViewer::View>  main_view_;
     osg::ref_ptr<osg::Switch>      root_node_;

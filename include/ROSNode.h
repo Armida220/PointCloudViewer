@@ -28,8 +28,11 @@
 
 #include <QtCore/QThread>
 #include <QtCore/QString>
-
+#include <QtCore/QVector>
+#include <QtCore/QPair>
 #include <Common.h>
+
+typedef QPair<QString, unsigned int> RosTopicPair;
 
 class ROSNode : public QThread {
     Q_OBJECT
@@ -37,7 +40,7 @@ public:
     ROSNode(int argc, char **argv);
     ~ROSNode() final;
 
-    bool init(const std::string& topic, unsigned int queue_size);
+    bool init(const QVector<RosTopicPair>& ros_topics);
 
     Q_DISABLE_COPY(ROSNode)
 protected:
@@ -46,14 +49,21 @@ protected:
 private:
     void callbackGetPointCloudData(const sensor_msgs::PointCloud2ConstPtr& msg);
     void callbackGetUAVPose(const nav_msgs::Odometry& msg);
+    void callbackGetGPSInfo(const nav_msgs::OdometryConstPtr& msg);
 
     int init_argc;
     char **init_argv;
 
-    ros::Subscriber point_cloud_data_sub;
+    ros::Subscriber pose_sub_;
+    ros::Subscriber gps_sub_;
+    ros::Subscriber origin_sub_;
+
 Q_SIGNALS:
     void emitPointCloud(PointArray);
     void emitUAVPos(Point);
+    void emitGPSLocation(Point);
+    void emitSatelliteNum(QString);
+    void emitRTKStatus(bool);
 };
 
 

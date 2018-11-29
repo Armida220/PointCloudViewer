@@ -53,10 +53,15 @@ struct Point {
 
 typedef QVector<Point> PointArray;
 
+inline std::ostream &operator<<( std::ostream &output, const Point &p )
+{
+    output << p.x << " " << p.y << " " << p.z;
+    return output;
+}
+
 inline std::ostream &operator<<( std::ostream &output, const osg::Vec3d &p )
 {
     output << p.x() << " " << p.y() << " " << p.z();
     return output;
 }
-
 #endif //POINTCLOUDVIEWER_COMMON_H

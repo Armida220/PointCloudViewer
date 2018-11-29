@@ -71,14 +71,26 @@ void MainWindow::createDockWidget() {
     //tree_widget_->setColumnWidth(0, 100);
     //tree_widget_->setStyleSheet("QTreeWidget::item {height:25px;");
 
-    QTreeWidgetItem *multiDataItem = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("数据列表")));
-    multiDataItem->setExpanded(true);
-    //multiDataItem->setCheckState(0, Qt::CheckState::Checked);
+    //GPS位置
     {
-
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("GPS位置")));
+        item->setExpanded(true);
     }
 
-    dock_widget_ = new QDockWidget(QStringLiteral("场景数据"), this);
+    //卫星数
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("卫星数")));
+        item->setExpanded(true);
+    }
+
+    //RTK状态
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("RTK状态")));
+        item->setCheckState(0, Qt::CheckState::Unchecked);
+    }
+
+
+    dock_widget_ = new QDockWidget(QStringLiteral("无人机状态"), this);
     dock_widget_->setFixedWidth(200);
     dock_widget_->setFeatures(QDockWidget::AllDockWidgetFeatures);
     dock_widget_->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -93,7 +105,11 @@ void MainWindow::createDockWidget() {
 
 void MainWindow::createConnect() {
     QObject::connect(ros_node_.data(), SIGNAL(emitUAVPos(Point)), osgwidget_, SLOT(updateUAVPose(Point)));
-    QObject::connect(ros_node_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
+    QObject::connect(ros_node_.data(), SIGNAL(emitGPSLocation(Point)), this, SLOT(updateGPSLocation(Point)));
+    QObject::connect(ros_node_.data(), SIGNAL(emitSatelliteNum(QString)), this, SLOT(updateSatelliteNum(QString)));
+    QObject::connect(ros_node_.data(), SIGNAL(emitRTKStatus(bool)), this, SLOT(updateRTKStatus(bool)));
+    //QObject::connect(ros_node_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
+
     QObject::connect(network_manager_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
 }
 
@@ -112,4 +128,38 @@ void MainWindow::setRosNode(ROSNode *ros_node) {
 
 void MainWindow::setNetworkManager(NetworkManager *network_manager) {
     network_manager_.reset(network_manager);
+}
+
+void MainWindow::updateGPSLocation(Point p) {
+    QString location_str;
+    location_str += "latitude:" + QString::number(p.x, 'f', 6) + "\n";
+    location_str += "longitude:" + QString::number(p.y, 'f', 6) + "\n";
+    location_str += "height:" + QString::number(p.z, 'f', 3);
+
+    auto location_item = tree_widget_->topLevelItem(GPS_LOCATION);
+
+    if(!location_item->childCount()) {
+        auto item = new QTreeWidgetItem(location_item);
+    }
+
+    auto item = location_item->child(0);
+    item->setText(0, location_str);
+}
+
+void MainWindow::updateSatelliteNum(QString num) {
+    auto satellite_item = tree_widget_->topLevelItem(SATELLITE_NUM);
+
+    if(!satellite_item->childCount()) {
+        auto item = new QTreeWidgetItem(satellite_item);
+    }
+
+    auto item = satellite_item->child(0);
+    item->setText(0, num);
+}
+
+void MainWindow::updateRTKStatus(bool is_valid) {
+    auto rtk_item = tree_widget_->topLevelItem(RTK_STATUS);
+
+    auto check_state = is_valid ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
+    rtk_item->setCheckState(0, check_state);
 }

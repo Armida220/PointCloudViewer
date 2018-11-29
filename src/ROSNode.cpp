@@ -22,19 +22,28 @@ ROSNode::~ROSNode() {
     std::cout << "ROSNode was safely deleted." << std::endl;
 }
 
-bool ROSNode::init(const std::string& topic, unsigned int queue_size) {
+bool ROSNode::init(const QVector<RosTopicPair>& ros_topics) {
     ros::init(init_argc, init_argv, "PointCloudViewer");
     if(!ros::master::check()){
         std::cout << "RosNode waiting..." << std::endl;
         return false;
     }
-    ros::start();
+    if (ros_topics.size() < 2)  return false;
 
+    ros::start();
     ros::NodeHandle nodeHandle;
 
-    point_cloud_data_sub = nodeHandle.subscribe(topic, queue_size, &ROSNode::callbackGetUAVPose, this);
+    pose_sub_ = nodeHandle.subscribe(ros_topics[0].first.toStdString(),
+                                     ros_topics[0].second, &ROSNode::callbackGetUAVPose, this);
 
-    std::cout << "RosNode init with topic: " << topic << " and queue size: " << queue_size << std::endl;
+    gps_sub_ = nodeHandle.subscribe(ros_topics[1].first.toStdString(),
+                                    ros_topics[1].second, &ROSNode::callbackGetGPSInfo, this);
+
+    std::cout << "RosNode init with: " << std::endl;
+    for(const auto& ros_topic : ros_topics)
+    {
+        std::cout << ros_topic.first.toStdString() << " " << ros_topic.second << std::endl;
+    }
     //start thread
     QThread::start();
     return true;
@@ -77,4 +86,25 @@ void ROSNode::callbackGetUAVPose(const nav_msgs::Odometry &msg) {
     orientation.w() = msg.pose.pose.orientation.w;
 
     emit emitUAVPos(position);
+}
+
+void ROSNode::callbackGetGPSInfo(const nav_msgs::OdometryConstPtr &msg) {
+    double lat, lon, height;
+    lat = msg->pose.pose.position.x;
+    lon = msg->pose.pose.position.y;
+    height = msg->pose.pose.position.z;
+    Point gps_location(lat, lon, height);
+    emit emitGPSLocation(gps_location);
+
+    auto satellite_num = static_cast<int>(msg->pose.covariance[4]);
+    QString satellite_num_str = QString::number(satellite_num);
+    emit emitSatelliteNum(satellite_num_str);
+
+    auto rtk_valid_check = [&]() {
+        bool position_int = round(msg->pose.covariance[5]) == 50;
+        bool heading_int = round(msg->pose.covariance[7]) == 50;
+        return position_int&&heading_int;
+    };
+    bool is_rtk_valid = rtk_valid_check();
+    emit emitRTKStatus(is_rtk_valid);
 }

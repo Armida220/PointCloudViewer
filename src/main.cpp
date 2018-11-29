@@ -28,12 +28,15 @@ int main(int argc, char* argv[]) {
     parser.addOption({{"l", "listen"},
                        "listening tcp port number",
                        "portNo", "9696"});
-    parser.addOption({{"t", "topic"},
+    parser.addOption({{"p", "pose"},
                        "subscribe ros topic for UAV pose",
-                       "name", "/gps_odom_filter"});
-    parser.addOption({{"q", "queuesize"},
-                       "ros topic queue size",
-                       "num", "1"});
+                       "topic", "/gps_odom_filter"});
+    parser.addOption({{"g", "gps_info"},
+                       "subscribe ros topic for GPS info",
+                       "topic", "/GPS_odom"});
+    parser.addOption({{"o", "origin point"},
+                      "subscribe ros topic for origin of longitude and latitude",
+                      "topic", "/uncertain"});
     parser.process(app);
 
     QStringList posArgs = parser.positionalArguments();
@@ -45,7 +48,11 @@ int main(int argc, char* argv[]) {
     }
 
     QScopedPointer<ROSNode> ros_node(new ROSNode(argc, argv));
-    ros_node->init(parser.value("topic").toStdString(), parser.value("queuesize").toUInt());
+    QVector<RosTopicPair> ros_topics;
+    ros_topics.push_back(qMakePair(parser.value("pose"), 1));
+    ros_topics.push_back(qMakePair(parser.value("gps_info"), 1));
+    //ros_topics.push_back(qMakePair(parser.value("origin"), 1));
+    ros_node->init(ros_topics);
 
     QScopedPointer<NetworkManager> network_manager(new NetworkManager);
     network_manager->setPortNum(parser.value("listen").toUShort());

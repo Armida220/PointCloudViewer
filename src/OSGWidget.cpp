@@ -73,7 +73,7 @@ void OSGWidget::initSceneGraph() {
         osg::ref_ptr<osg::Geode> geode = new osg::Geode;
         geode->setName("UAV");
 
-        osg::ref_ptr<osg::ShapeDrawable> point_sphere = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3d(), 1.5f));
+        osg::ref_ptr<osg::ShapeDrawable> point_sphere = new osg::ShapeDrawable(new osg::Sphere(osg::Vec3d(), 0.5f));
         point_sphere->setColor(osg::Vec4(1.0, 1.0, 0.0, 1.0));
         geode->addDrawable(point_sphere);
 
@@ -171,7 +171,7 @@ void OSGWidget::readDataFromFile(const QFileInfo &file_info) {
     osg::ref_ptr<osg::MatrixTransform> matrix = new osg::MatrixTransform;
     matrix->addChild(node);
     matrix->addChild(bbox);
-    //matrix->setUpdateCallback(new NodeCallback());
+    matrix->setUpdateCallback(new NodeCallback());
 
     point_cloud_node->removeChildren(0, point_cloud_node->getNumChildren());
     point_cloud_node->addChild(matrix);
@@ -255,14 +255,15 @@ void OSGWidget::updatePointCloud(PointArray points) {
     osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
     osg::ref_ptr<osg::Vec3Array> colors = new osg::Vec3Array;
 
-    for(const auto& p : points) {
-        vertices->push_back(osg::Vec3d(p.x, p.y, p.z));
+    for(const auto& point : points) {
+        osg::Vec3d p(point.x, point.y, point.z);
+        vertices->push_back(p);
+        colors->push_back(calculateColorForPoint(p));
     }
-    colors->push_back(osg::Vec3(1, 1, 1));
 
     geom->setVertexArray(vertices);
     geom->setColorArray(colors);
-    geom->setColorBinding(osg::Geometry::BIND_OVERALL);
+    geom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
     geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, vertices->size()));
 
     geode->addDrawable(geom);
@@ -306,7 +307,7 @@ void OSGWidget::updateUAVPose(Point pos) {
 
             text->setPosition(position);
             text->setCharacterSize(20);
-            text->setText("Positon: " + position_str.toStdString());
+            text->setText("UAV Pos: " + position_str.toStdString());
         }
         text_node_->addChild(geode);
     }
@@ -323,4 +324,21 @@ osg::Camera *OSGWidget::createHUD() {
     camera->setAllowEventFocus(false);
 
     return camera.release();
+}
+
+osg::Vec3d OSGWidget::calculateColorForPoint(const osg::Vec3d &point) const {
+    static std::vector<osg::Vec3> Colors =
+            { osg::Vec3(0.0, 0.0, 1.0), osg::Vec3(0.0, 0.2, 1.0), osg::Vec3(0.0, 0.4, 1.0), osg::Vec3(0.0, 0.6, 1.0), osg::Vec3(0.0, 0.8, 1.0), osg::Vec3(0.0, 1.0, 1.0),
+              osg::Vec3(0.0, 1.0, 0.8), osg::Vec3(0.0, 1.0, 0.6), osg::Vec3(0.0, 1.0, 0.4), osg::Vec3(0.0, 1.0, 0.2), osg::Vec3(0.0, 1.0, 0.0), osg::Vec3(0.2, 1.0, 0.0),
+              osg::Vec3(0.4, 1.0, 0.0), osg::Vec3(0.6, 1.0, 0.0), osg::Vec3(0.8, 1.0, 0.0), osg::Vec3(1.0, 1.0, 0.0), osg::Vec3(1.0, 0.8, 0.0), osg::Vec3(1.0, 0.6, 0.0),
+              osg::Vec3(1.0, 0.4, 0.0), osg::Vec3(1.0, 0.2, 0.0), osg::Vec3(1.0, 0.0, 0.0)
+            };
+    const int distance_range = 30;
+
+    double distance = point.length();
+    int range = static_cast<int>(distance) / distance_range;
+    if(range >= Colors.size()) range = Colors.size() - 1;
+    if(range == 0) range = 1;
+
+    return Colors[Colors.size() - range];
 }

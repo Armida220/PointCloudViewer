@@ -39,7 +39,8 @@ private:
 Q_SIGNALS:
     void emitPointCloud(PointArray);
 private Q_SLOTS:
-    void getPointCloudData();
+    void getRawPointCloudData();
+    void getDracoPointCloudData();
 };
 
 

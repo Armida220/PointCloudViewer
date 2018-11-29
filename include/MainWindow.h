@@ -28,6 +28,8 @@
 #include <QtWidgets/QLabel>
 #include <QtCore/QScopedPointer>
 
+#include "Common.h"
+
 //global variable declaration
 extern bool g_is_debug_mode;
 
@@ -59,6 +61,11 @@ private:
     //other widgets
     QDockWidget*  dock_widget_;
     QTreeWidget*  tree_widget_;
+    enum TREE_WIDGET_ITEM {
+        GPS_LOCATION,
+        SATELLITE_NUM,
+        RTK_STATUS
+    };
 
     //items
     QAction*   open_file_action;
@@ -68,6 +75,9 @@ private:
     QScopedPointer<NetworkManager> network_manager_;
 public Q_SLOTS:
     void openFile();
+    void updateGPSLocation(Point);
+    void updateSatelliteNum(QString);
+    void updateRTKStatus(bool);
 };
 
 
