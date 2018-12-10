@@ -65,11 +65,11 @@ void NetworkManager::getRawPointCloudData() {
 }
 
 void NetworkManager::setPortNum(unsigned short port_num) {
-    std::cout << "Network Manager is listening to port: " << port_num << std::endl;
+    std::cout << "Network Manager is listening to port: " << port_num << " mode: " << g_is_debug_mode << std::endl;
     socket_->bind(QHostAddress::AnyIPv4, port_num);
     connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getRawPointCloudData()));
-//    if(g_is_debug_mode) connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getRawPointCloudData()));
-//    else connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getDracoPointCloudData()));
+    if(g_is_debug_mode) connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getRawPointCloudData()));
+    else connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getDracoPointCloudData()));
 }
 
 void NetworkManager::getDracoPointCloudData() {

@@ -69,7 +69,9 @@ private:
 
     //items
     QAction*   open_file_action;
-    QAction*   draw_line_action;
+    QAction*   start_action;
+    QAction*   end_action;
+    QAction*   convert_action;
 
     QScopedPointer<ROSNode> ros_node_;
     QScopedPointer<NetworkManager> network_manager_;
@@ -78,6 +80,10 @@ public Q_SLOTS:
     void updateGPSLocation(Point);
     void updateSatelliteNum(QString);
     void updateRTKStatus(bool);
+
+    void startTriggered();
+    void endTriggered();
+    void convertTriggered();
 };
 
 

@@ -9,6 +9,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QDebug>
 #include <QtCore/QString>
+#include <QtCore/QProcess>
 #include <QtCore/QStringList>
 #include <QtCore/QFileInfoList>
 #include <include/MainWindow.h>
@@ -27,7 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     dock_widget_(nullptr),
     tree_widget_(nullptr),
     open_file_action(nullptr),
-    draw_line_action(nullptr),
+    start_action(nullptr),
+    end_action(nullptr),
+    convert_action(nullptr),
     ros_node_(nullptr),
     network_manager_(nullptr) {
 
@@ -54,11 +57,30 @@ void MainWindow::createMenu() {
     open_file_action = new QAction("Open", this);
     open_file_action->setIcon(QIcon(":/images/file_open.png"));
     connect(open_file_action, SIGNAL(triggered()), this, SLOT(openFile()));
+
+    start_action = new QAction(QStringLiteral("开始"), this);
+    start_action->setIcon(QIcon(":/images/start.png"));
+    connect(start_action, SIGNAL(triggered()), this, SLOT(startTriggered()));
+
+    end_action = new QAction(QStringLiteral("停止"), this);
+    end_action->setIcon(QIcon(":/images/end.png"));
+    connect(end_action, SIGNAL(triggered()), this, SLOT(endTriggered()));
+
+    convert_action = new QAction(QStringLiteral("格式转换"), this);
+    convert_action->setIcon(QIcon(":/images/convert.png"));
+    connect(convert_action, SIGNAL(triggered()), this, SLOT(convertTriggered()));
 }
 
 void MainWindow::createToolBar() {
     QToolBar *toolBar = addToolBar("Tools");
-    toolBar->addAction(open_file_action);
+    //toolBar->addAction(open_file_action);
+    toolBar->addAction(start_action);
+    toolBar->addSeparator();
+
+    toolBar->addAction(end_action);
+    toolBar->addSeparator();
+
+    toolBar->addAction(convert_action);
     toolBar->addSeparator();
 
     //toolBar->addAction(draw_line_action);
@@ -162,4 +184,65 @@ void MainWindow::updateRTKStatus(bool is_valid) {
 
     auto check_state = is_valid ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
     rtk_item->setCheckState(0, check_state);
+}
+
+void MainWindow::startTriggered() {
+    QFileInfo file_info("./start.sh");
+    if(!file_info.exists()) {
+        QMessageBox::information(this, "Open", "Can't find start.sh");
+        return;
+    }
+
+    QString program = file_info.absoluteFilePath();
+    QStringList arguments;
+    //arguments << "";
+
+    QProcess *process = new QProcess;
+    process->start(program, arguments);
+    if(!process->waitForStarted()){
+        return;
+    };
+
+    std::cout << program.toStdString() << " is called!" << std::endl;
+    //system("./test.sh Viewer abcsd");
+}
+
+void MainWindow::endTriggered() {
+    QFileInfo file_info("./end.sh");
+    if(!file_info.exists()) {
+        QMessageBox::information(this, "Open", "Can't find end.sh");
+        return;
+    }
+
+    QString program = file_info.absoluteFilePath();
+    QStringList arguments;
+    //arguments << "";
+
+    QProcess *process = new QProcess;
+    process->start(program, arguments);
+    if(!process->waitForStarted()){
+        return;
+    };
+
+    std::cout << program.toStdString() << " is called!" << std::endl;
+}
+
+void MainWindow::convertTriggered() {
+    QFileInfo file_info("./convert.sh");
+    if(!file_info.exists()) {
+        QMessageBox::information(this, "Open", "Can't find convert.sh");
+        return;
+    }
+
+    QString program = file_info.absoluteFilePath();
+    QStringList arguments;
+    //arguments << "";
+
+    QProcess *process = new QProcess;
+    process->startDetached(program, arguments);
+    if(!process->waitForStarted()){
+        return;
+    };
+
+    std::cout << program.toStdString() << " is called!" << std::endl;
 }
