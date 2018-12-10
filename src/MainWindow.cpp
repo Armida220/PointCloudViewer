@@ -15,12 +15,9 @@
 #include <include/MainWindow.h>
 
 #include "Common.h"
-#include "ROSNode.h"
 #include "OSGWidget.h"
 #include "MainWindow.h"
 #include "NetworkManager.h"
-
-bool g_is_debug_mode = false;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -31,8 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     start_action(nullptr),
     end_action(nullptr),
     convert_action(nullptr),
-    ros_node_(nullptr),
-    network_manager_(nullptr) {
+    pointcloud_manager_(nullptr),
+    statusinfo_manager_(nullptr) {
 
     this->setWindowTitle("PointCloudViewer");
     initUI();
@@ -40,9 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
     osgwidget_ = new OSGWidget(this);
     this->setCentralWidget(osgwidget_);
     osgwidget_->init();
-
-    if(g_is_debug_mode)
-        std::cout << "MainWindow Running on debug mode." << std::endl;
 }
 
 MainWindow::~MainWindow() = default;
@@ -126,13 +120,12 @@ void MainWindow::createDockWidget() {
 }
 
 void MainWindow::createConnect() {
-    QObject::connect(ros_node_.data(), SIGNAL(emitUAVPos(Point)), osgwidget_, SLOT(updateUAVPose(Point)));
-    QObject::connect(ros_node_.data(), SIGNAL(emitGPSLocation(Point)), this, SLOT(updateGPSLocation(Point)));
-    QObject::connect(ros_node_.data(), SIGNAL(emitSatelliteNum(QString)), this, SLOT(updateSatelliteNum(QString)));
-    QObject::connect(ros_node_.data(), SIGNAL(emitRTKStatus(bool)), this, SLOT(updateRTKStatus(bool)));
-    //QObject::connect(ros_node_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
+    QObject::connect(statusinfo_manager_.data(), SIGNAL(emitUAVPos(Point)), osgwidget_, SLOT(updateUAVPose(Point)));
+    QObject::connect(statusinfo_manager_.data(), SIGNAL(emitGPSLocation(Point)), this, SLOT(updateGPSLocation(Point)));
+    QObject::connect(statusinfo_manager_.data(), SIGNAL(emitSatelliteNum(QString)), this, SLOT(updateSatelliteNum(QString)));
+    QObject::connect(statusinfo_manager_.data(), SIGNAL(emitRTKStatus(bool)), this, SLOT(updateRTKStatus(bool)));
 
-    QObject::connect(network_manager_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
+    QObject::connect(pointcloud_manager_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
 }
 
 void MainWindow::openFile() {
@@ -144,12 +137,12 @@ void MainWindow::openFile() {
     osgwidget_->readDataFromFile(f);
 }
 
-void MainWindow::setRosNode(ROSNode *ros_node) {
-    ros_node_.reset(ros_node);
+void MainWindow::setPointCloudManager(NetworkManager *network_manager) {
+    pointcloud_manager_.reset(network_manager);
 }
 
-void MainWindow::setNetworkManager(NetworkManager *network_manager) {
-    network_manager_.reset(network_manager);
+void MainWindow::setStatusInfoManager(NetworkManager *network_manager) {
+    statusinfo_manager_.reset(network_manager);
 }
 
 void MainWindow::updateGPSLocation(Point p) {

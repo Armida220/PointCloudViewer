@@ -36,9 +36,23 @@ const char text_node_name[] = "text_node";
 const char positon_geode_name[] = "positon_geode";
 const char helper_node_name[] = "helper_node";
 
-const double g_utm_x = 198078;
-const double g_utm_y = 2.50364e6;
+//xia fan
+typedef struct GpsMsgs{
+    double x;
+    double y;
+    double z;
+    double lat;
+    double lon;
+    double hei;
 
+    double q_x;
+    double q_y;
+    double q_z;
+    double q_w;
+    int satellites;
+    int rtk_state;
+    int heading_state;
+} GpsMsgs_t;
 
 struct Point {
     double x, y, z;

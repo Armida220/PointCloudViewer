@@ -31,16 +31,28 @@ public:
     explicit NetworkManager(QObject* parent = nullptr);
     ~NetworkManager() final;
 
+    enum class MODE {
+        POINTCLOUD,
+        STATUSINFO
+    };
+
+    void setMode(const MODE& m);
     void setPortNum(unsigned short port_num);
 
     Q_DISABLE_COPY(NetworkManager);
 private:
     QScopedPointer<QUdpSocket> socket_;
+    MODE mode;
 Q_SIGNALS:
     void emitPointCloud(PointArray);
+    void emitUAVPos(Point);
+    void emitGPSLocation(Point);
+    void emitSatelliteNum(QString);
+    void emitRTKStatus(bool);
+
 private Q_SLOTS:
-    void getRawPointCloudData();
     void getDracoPointCloudData();
+    void getStatusInfo();
 };
 
 

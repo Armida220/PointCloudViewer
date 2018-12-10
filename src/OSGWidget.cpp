@@ -29,17 +29,12 @@
 #include "NodeTreeInfo.h"
 #include "NodeTreeSearch.h"
 
-extern bool g_is_debug_mode;
-
 OSGWidget::OSGWidget(QWidget* parent):
     QWidget(parent),
     main_view_(nullptr),
     root_node_(nullptr),
     text_node_(nullptr),
     update_timer_(new QTimer){
-
-    if(g_is_debug_mode)
-        std::cout << "OSGWidget Running on debug mode." << std::endl;
 }
 
 OSGWidget::~OSGWidget() = default;
@@ -279,8 +274,8 @@ void OSGWidget::updateUAVPose(Point pos) {
             NodeTreeSearch::findNodeWithName(root_node_, uav_node_name));
 
     osg::Vec3d position;
-    position.x() = pos.x - g_utm_x;
-    position.y() = pos.y - g_utm_y;
+    position.x() = pos.x;
+    position.y() = pos.y;
     position.z() = pos.z;
 
     uav_node->setPosition(position);
