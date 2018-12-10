@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.3)
 project(PointCloudViewer)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -14,7 +14,7 @@ find_package(Qt5Gui CONFIG REQUIRED)
 find_package(Qt5Network CONFIG REQUIRED)
 qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
 find_package(OpenSceneGraph 3.2 REQUIRED COMPONENTS osgGA osgViewer osgDB osgUtil osgText osg osgQt osgFX)
-find_package(PCL REQUIRED)
+#find_package(PCL REQUIRED)
 find_package(Draco REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
         roscpp

@@ -1,6 +1,6 @@
-#include <pcl_conversions/pcl_conversions.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+//#include <pcl_conversions/pcl_conversions.h>
+//#include <pcl/point_cloud.h>
+//#include <pcl/point_types.h>
 #include <include/ROSNode.h>
 
 
@@ -55,20 +55,20 @@ void ROSNode::run() {
 
 void ROSNode::callbackGetPointCloudData(const sensor_msgs::PointCloud2ConstPtr& input) {
 
-    PointArray points;
-    {
-        pcl::PointCloud<pcl::PointXYZI> point_cloud;
-        pcl::fromROSMsg(*input, point_cloud);
-
-        for(const auto& p : point_cloud) {
-            if (std::isnan(p.x) || std::isnan(p.y) || std::isnan(p.z)) continue;
-
-            points.push_back(Point(p.x, p.y, p.z));
-        }
-    }
-    if(points.isEmpty()) return;
-
-    emit emitPointCloud(points);
+//    PointArray points;
+//    {
+//        pcl::PointCloud<pcl::PointXYZI> point_cloud;
+//        pcl::fromROSMsg(*input, point_cloud);
+//
+//        for(const auto& p : point_cloud) {
+//            if (std::isnan(p.x) || std::isnan(p.y) || std::isnan(p.z)) continue;
+//
+//            points.push_back(Point(p.x, p.y, p.z));
+//        }
+//    }
+//    if(points.isEmpty()) return;
+//
+//    emit emitPointCloud(points);
 }
 
 void ROSNode::callbackGetUAVPose(const nav_msgs::Odometry &msg) {

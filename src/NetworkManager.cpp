@@ -5,6 +5,7 @@
 
 #include <draco/io/ply_decoder.h>
 #include <draco/core/decoder_buffer.h>
+#include <draco/compression/decode.h>
 
 #include "Tracer.h"
 #include "NetworkManager.h"
@@ -67,7 +68,6 @@ void NetworkManager::getRawPointCloudData() {
 void NetworkManager::setPortNum(unsigned short port_num) {
     std::cout << "Network Manager is listening to port: " << port_num << " mode: " << g_is_debug_mode << std::endl;
     socket_->bind(QHostAddress::AnyIPv4, port_num);
-    connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getRawPointCloudData()));
     if(g_is_debug_mode) connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getRawPointCloudData()));
     else connect(socket_.data(), SIGNAL(readyRead()), this, SLOT(getDracoPointCloudData()));
 }
@@ -79,20 +79,31 @@ void NetworkManager::getDracoPointCloudData() {
     quint16 senderPort;
     socket_->readDatagram(udp_buffer.data(), udp_buffer.size(), &sender, &senderPort);
 
-    std::unique_ptr<draco::DecoderBuffer> draco_buffer(new draco::DecoderBuffer);
-    draco_buffer->Init(udp_buffer.data(), udp_buffer.size());
+    draco::DecoderBuffer draco_buffer;
+    draco_buffer.Init(udp_buffer.data(), udp_buffer.size());
+    std::cout << "receive udp buffer size: " << udp_buffer.size() << std::endl;
 
-    std::unique_ptr<draco::PointCloud> draco_point_cloud(new draco::PointCloud); 
-    draco::PlyDecoder ply_decoder;
-    bool result = ply_decoder.DecodeFromBuffer(draco_buffer.get(), draco_point_cloud.get());
-    if(!result)
-    {
-        std::cout << "unknown udp buffer, plz check." << std::endl;
+    std::unique_ptr<draco::PointCloud> draco_point_cloud;
+    auto type_statusor = draco::Decoder::GetEncodedGeometryType(&draco_buffer);
+    if (!type_statusor.ok()) {
+        std::cout << "get a type statusor error, plz check" << std::endl;
         return;
-    } else {
-        std::cout << "receive udp buffer size: " << udp_buffer.size() << std::endl;
     }
-
+    const draco::EncodedGeometryType geom_type = type_statusor.value();
+    if (geom_type == draco::POINT_CLOUD) {
+        std::cout << "get a point cloud" << std::endl;
+        draco::Decoder decoder;
+        auto statusor = decoder.DecodePointCloudFromBuffer(&draco_buffer);
+        if (!statusor.ok()) {
+            std::cout << "get a decode error" << std::endl;
+            return;
+        }
+        draco_point_cloud = std::move(statusor).value();
+        if (draco_point_cloud == nullptr) {
+            std::cout << "Failed to decode the input file" << std::endl;
+            return;
+        }
+    }
     auto num_points = draco_point_cloud->num_points();
     //std::cout << "convert draco to pcd, point num: " << num_points << std::endl;
 
