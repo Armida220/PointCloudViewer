@@ -16,11 +16,9 @@ Using Qt and OSG to build the interface, it can render the compressed point clou
 ![PointCloudViewer 展示](img/test.png)
 
 #### Prerequisites
-1. PCL
-2. Ros
-3. Draco(https://github.com/google/draco)
-4. OpenSceneGraph 3.2
-5. Qt version 5.5 or newer
+1. Draco(https://github.com/google/draco)
+2. OpenSceneGraph 3.2
+3. Qt version 5.5 or newer
 
   Make sure you have a C++11 compliant compiler (gcc 5.5+ / clang)
 
