@@ -18,6 +18,9 @@
 #include "OSGWidget.h"
 #include "MainWindow.h"
 #include "NetworkManager.h"
+extern "C"{
+#include "SshControl.h"
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -180,44 +183,13 @@ void MainWindow::updateRTKStatus(bool is_valid) {
 }
 
 void MainWindow::startTriggered() {
-    QFileInfo file_info("./start.sh");
-    if(!file_info.exists()) {
-        QMessageBox::information(this, "Open", "Can't find start.sh");
-        return;
-    }
-
-    QString program = file_info.absoluteFilePath();
-    QStringList arguments;
-    //arguments << "";
-
-    QProcess *process = new QProcess;
-    process->start(program, arguments);
-    if(!process->waitForStarted()){
-        return;
-    };
-
-    std::cout << program.toStdString() << " is called!" << std::endl;
-    //system("./test.sh Viewer abcsd");
+   executeSshCmd("ls");
+   //executeSshCmd("./start.sh");
 }
 
 void MainWindow::endTriggered() {
-    QFileInfo file_info("./end.sh");
-    if(!file_info.exists()) {
-        QMessageBox::information(this, "Open", "Can't find end.sh");
-        return;
-    }
-
-    QString program = file_info.absoluteFilePath();
-    QStringList arguments;
-    //arguments << "";
-
-    QProcess *process = new QProcess;
-    process->start(program, arguments);
-    if(!process->waitForStarted()){
-        return;
-    };
-
-    std::cout << program.toStdString() << " is called!" << std::endl;
+    executeSshCmd("pwd");
+    //executeSshCmd("./end.sh");
 }
 
 void MainWindow::convertTriggered() {

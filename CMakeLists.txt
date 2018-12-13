@@ -14,6 +14,7 @@ find_package(Qt5Network CONFIG REQUIRED)
 qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
 find_package(OpenSceneGraph 3.2 REQUIRED COMPONENTS osgGA osgViewer osgDB osgUtil osgText osg osgQt osgFX)
 find_package(Draco REQUIRED)
+find_package(libssh REQUIRED)
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
@@ -26,11 +27,14 @@ aux_source_directory(src SOURCE_FILES)
 add_executable(${PROJECT_NAME}
         ${SOURCE_FILES}
         ${HEAD_FILES}
-        ${QRC_FILES})
+        ${QRC_FILES}
+        #include/SshControl.h src/SshControl.c
+        )
 
 target_link_libraries(${PROJECT_NAME}
         ${OPENSCENEGRAPH_LIBRARIES}
         draco dracoenc dracodec
+        ssh
         Qt5::Widgets
         Qt5::Core
         Qt5::Gui
