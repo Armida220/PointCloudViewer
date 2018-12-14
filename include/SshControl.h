@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2018 Ally of Intelligence Technology Co., Ltd. All rights reserved.
  *
  * Created by WuKun on 12/13/18.
@@ -20,6 +20,6 @@
 #ifndef POINTCLOUDVIEWER_SSH_H
 #define POINTCLOUDVIEWER_SSH_H
 
-extern int executeSshCmd(const char* cmd);
+extern int execute_ssh_cmd(const char* cmd);
 
 #endif //POINTCLOUDVIEWER_SSH_H

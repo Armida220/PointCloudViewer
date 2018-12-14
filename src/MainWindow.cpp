@@ -1,4 +1,4 @@
-#include <QtWidgets/QMenu>
+﻿#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QMessageBox>
@@ -90,23 +90,23 @@ void MainWindow::createDockWidget() {
     //tree_widget_->setColumnWidth(0, 100);
     //tree_widget_->setStyleSheet("QTreeWidget::item {height:25px;");
 
-    //GPS位置
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("GPS位置")));
-        item->setExpanded(true);
-    }
+	//GPS位置
+	{
+		QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("GPS位置")));
+		item->setExpanded(true);
+	}
 
-    //卫星数
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("卫星数")));
-        item->setExpanded(true);
-    }
+	//卫星数
+	{
+		QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("卫星数")));
+		item->setExpanded(true);
+	}
 
-    //RTK状态
-    {
-        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("RTK状态")));
-        item->setCheckState(0, Qt::CheckState::Unchecked);
-    }
+	//RTK状态
+	{
+		QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("RTK状态")));
+		item->setCheckState(0, Qt::CheckState::Unchecked);
+	}
 
 
     dock_widget_ = new QDockWidget(QStringLiteral("无人机状态"), this);
@@ -183,13 +183,19 @@ void MainWindow::updateRTKStatus(bool is_valid) {
 }
 
 void MainWindow::startTriggered() {
-   executeSshCmd("ls");
-   //executeSshCmd("./start.sh");
+	int result = execute_ssh_cmd("ls");
+	if (result == 0) {
+		QMessageBox::information(NULL, "Info", QStringLiteral("开启成功"), QMessageBox::Yes);
+	}
+	//execute_ssh_cmd("./start.sh");
 }
 
 void MainWindow::endTriggered() {
-    executeSshCmd("pwd");
-    //executeSshCmd("./end.sh");
+	int result = execute_ssh_cmd("pwd");
+	if (result == 0) {
+		QMessageBox::information(NULL, "Info", QStringLiteral("关闭成功"), QMessageBox::Yes);
+	}
+    //execute_ssh_cmd("./end.sh");
 }
 
 void MainWindow::convertTriggered() {

@@ -1,4 +1,4 @@
-#include <QtWidgets/QApplication>
+﻿#include <QtWidgets/QApplication>
 #include <QtCore/QCommandLineOption>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QScopedPointer>
@@ -26,11 +26,11 @@ int main(int argc, char* argv[]) {
     statusinfo_manager->setPortNum(9697);
 
     MainWindow main_window;
-    main_window.setGeometry(100, 100, 1500, 800);  //graphic_context bugs!
+    main_window.setMinimumSize(800, 600);  //graphic_context bugs!
     main_window.setPointCloudManager(pointcloud_manager.take());
     main_window.setStatusInfoManager(statusinfo_manager.take());
     main_window.createConnect();
-    main_window.show();
+    main_window.showMaximized();
 
     return app.exec();
 }
