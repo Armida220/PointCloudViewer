@@ -36,10 +36,10 @@ int verify_knownhost(ssh_session session)
 	unsigned char *hash = NULL;
 	ssh_key srv_pubkey = NULL;
 	size_t hlen;
-	char buf[10];
-	char *hexa;
-	char *p;
-	int cmp;
+//	char buf[10];
+//	char *hexa;
+//	char *p;
+//	int cmp;
 	int rc;
 	rc = ssh_get_server_publickey(session, &srv_pubkey);
 	if (rc < 0) {
@@ -77,19 +77,21 @@ int verify_knownhost(ssh_session session)
 			"automatically created.\n");
 		/* FALL THROUGH to SSH_SERVER_NOT_KNOWN behavior */
 	case SSH_KNOWN_HOSTS_UNKNOWN:
-		hexa = ssh_get_hexa(hash, hlen);
-		fprintf(stderr, "The server is unknown. Do you trust the host key?\n");
-		fprintf(stderr, "Public key hash: %s\n", hexa);
-		ssh_string_free_char(hexa);
-		ssh_clean_pubkey_hash(&hash);
-		p = fgets(buf, sizeof(buf), stdin);
-		if (p == NULL) {
-			return -1;
-		}
-		cmp = strncasecmp(buf, "yes", 3);
-		if (cmp != 0) {
-			return -1;
-		}
+	    // Deliberately cancel the check
+
+//		hexa = ssh_get_hexa(hash, hlen);
+//		fprintf(stderr, "The server is unknown. Do you trust the host key?\n");
+//		fprintf(stderr, "Public key hash: %s\n", hexa);
+//		ssh_string_free_char(hexa);
+//		ssh_clean_pubkey_hash(&hash);
+//		p = fgets(buf, sizeof(buf), stdin);
+//		if (p == NULL) {
+//			return -1;
+//		}
+//		cmp = strncasecmp(buf, "yes", 3);
+//		if (cmp != 0) {
+//			return -1;
+//		}
 		rc = ssh_session_update_known_hosts(session);
 		if (rc < 0) {
 			fprintf(stderr, "Error %s\n", "failed");

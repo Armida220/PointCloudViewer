@@ -7,6 +7,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 set(QRC_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/icon.qrc)
 
+add_subdirectory(3rdparty)
+
 find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED)
 find_package(Qt5Gui CONFIG REQUIRED)
@@ -28,10 +30,10 @@ add_executable(${PROJECT_NAME}
         ${SOURCE_FILES}
         ${HEAD_FILES}
         ${QRC_FILES}
-        #include/SshControl.h src/SshControl.c
         )
 
 target_link_libraries(${PROJECT_NAME}
+        pc_exhibition
         ${OPENSCENEGRAPH_LIBRARIES}
         draco dracoenc dracodec
         ssh

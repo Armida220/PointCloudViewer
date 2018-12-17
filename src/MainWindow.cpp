@@ -12,7 +12,9 @@
 #include <QtCore/QProcess>
 #include <QtCore/QStringList>
 #include <QtCore/QFileInfoList>
-#include <include/MainWindow.h>
+
+#include <thread>
+#include <functional>
 
 #include "Common.h"
 #include "OSGWidget.h"
@@ -21,6 +23,8 @@
 extern "C"{
 #include "SshControl.h"
 }
+#include "3rdparty/pointcloud_expplore.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -199,21 +203,18 @@ void MainWindow::endTriggered() {
 }
 
 void MainWindow::convertTriggered() {
-    QFileInfo file_info("./convert.sh");
-    if(!file_info.exists()) {
-        QMessageBox::information(this, "Open", "Can't find convert.sh");
+    QUrl dir_path = QFileDialog::getExistingDirectoryUrl(nullptr, QStringLiteral("选择点云文件夹"));
+    if(dir_path.isEmpty())
         return;
-    }
 
-    QString program = file_info.absoluteFilePath();
-    QStringList arguments;
-    //arguments << "";
+    convert_action->setEnabled(false);
+    auto dir_path_str = dir_path.toLocalFile().toStdString();
 
-    QProcess *process = new QProcess;
-    process->startDetached(program, arguments);
-    if(!process->waitForStarted()){
-        return;
+    auto callback = [&]() {
+        convert_action->setEnabled(true);
     };
 
-    std::cout << program.toStdString() << " is called!" << std::endl;
+    std::thread thread1(ConvertToLas, dir_path_str, callback);
+    thread1.detach();
+    std::cout << "get bag dir: " << dir_path_str << std::endl;
 }
