@@ -3,11 +3,11 @@
 #include <iostream>
 
 #include <liblas/liblas.hpp>
-#include "config.h"
+#include "Config.h"
 
-#include "post_bag.h"
-#include "msf_sensor_types.h"
-#include "pointcloud_expplore.h"
+#include "PostBag.h"
+#include "MsfSensorTypes.h"
+#include "PointcloudConvert.h"
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
@@ -114,13 +114,6 @@ void writeLasFromPointCloud(const char* strInPointsName, const char* strOutLasNa
 }
 
 void ConvertToLas(const std::string& bag_path, std::function<void(void)> callback) {
-#ifdef __GNUC__
-    auto config_file_path = "../config/setting.yaml";
-#else
-    auto config_file_path = "./config/setting.yaml";
-#endif
-    Config::setParameterFile(config_file_path);
-
     std::string /*bag_path,*/ out_file, pose_file, points_file;
     std::string laserTopic;
     double y, p, r;

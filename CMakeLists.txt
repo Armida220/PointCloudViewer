@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 set(QRC_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/icon.qrc)
-
-add_subdirectory(3rdparty)
+set(CMAKE_PREFIX_PATH "/usr/local/lib64")
 
 find_package(Qt5Widgets CONFIG REQUIRED)
 find_package(Qt5Core CONFIG REQUIRED)
@@ -17,10 +16,16 @@ qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})
 find_package(OpenSceneGraph 3.2 REQUIRED COMPONENTS osgGA osgViewer osgDB osgUtil osgText osg osgQt osgFX)
 find_package(Draco REQUIRED)
 find_package(libssh REQUIRED)
+find_package(yaml-cpp REQUIRED)
+find_package(libLAS REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
         ${OPENSCENEGRAPH_INCLUDE_DIRS}
+        ${YAML_CPP_INCLUDE_DIR}
+        ${libLAS_INCLUDE_DIRS}
+        ${EIGEN3_INCLUDE_DIR}
         )
 
 file(GLOB HEAD_FILES "include/*.h")
@@ -33,13 +38,13 @@ add_executable(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}
-        pc_exhibition
         ${OPENSCENEGRAPH_LIBRARIES}
         draco dracoenc dracodec
-        ssh
+        ${LIBSSH_LIBRARIES}
+        yaml-cpp
+        las
         Qt5::Widgets
         Qt5::Core
         Qt5::Gui
         Qt5::Network
         )
-#qt5_use_modules(${PROJECT_NAME} Core Widgets OpenGL Xml Gui)

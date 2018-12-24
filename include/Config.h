@@ -30,7 +30,7 @@ class Config {
     auto result = config_->node_[key];
     if (result.IsDefined()) {
         auto value = result.as<T>();
-        std::cout << key << " is " << value << std::endl;
+        std::cout << key << " is set to: " << value << std::endl;
         return value;
     } else {
       return T();

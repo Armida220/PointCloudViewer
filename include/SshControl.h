@@ -20,6 +20,7 @@
 #ifndef POINTCLOUDVIEWER_SSH_H
 #define POINTCLOUDVIEWER_SSH_H
 
-extern int execute_ssh_cmd(const char* cmd);
+extern int execute_ssh_cmd(const char* ip_address, const char* usr_name,
+                           const char* password, const char* cmd);
 
 #endif //POINTCLOUDVIEWER_SSH_H

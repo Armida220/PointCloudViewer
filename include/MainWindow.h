@@ -20,6 +20,8 @@
 #ifndef POINTCLOUDVIEWER_MAINWINDOW_H
 #define POINTCLOUDVIEWER_MAINWINDOW_H
 
+#include <string>
+
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QProgressBar>
 #include <QtWidgets/QDockWidget>
@@ -29,9 +31,6 @@
 #include <QtCore/QScopedPointer>
 
 #include "Common.h"
-
-//global variable declaration
-extern bool g_is_debug_mode;
 
 //forward declaration
 class OSGWidget;
@@ -46,6 +45,7 @@ public:
     void setPointCloudManager(NetworkManager* network_manager);
     void setStatusInfoManager(NetworkManager* network_manager);
     void createConnect();
+    void initConfig();
 
     Q_DISABLE_COPY(MainWindow);
 private:
@@ -68,6 +68,7 @@ private:
 
     //items
     QAction*   open_file_action;
+    QAction*   connect_action;
     QAction*   start_action;
     QAction*   end_action;
     QAction*   convert_action;
@@ -75,12 +76,20 @@ private:
     QScopedPointer<NetworkManager> pointcloud_manager_;
     QScopedPointer<NetworkManager> statusinfo_manager_;
 
+    std::string ip_address_;
+    std::string usr_name_;
+    std::string password_;
+    std::string connect_cmd_;
+    std::string start_cmd_;
+    std::string end_cmd_;
+
 public Q_SLOTS:
     void openFile();
     void updateGPSLocation(Point);
     void updateSatelliteNum(QString);
     void updateRTKStatus(bool);
 
+    void connectTriggered();
     void startTriggered();
     void endTriggered();
     void convertTriggered();

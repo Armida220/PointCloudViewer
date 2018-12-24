@@ -3,6 +3,7 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QScopedPointer>
 
+#include "Config.h"
 #include "Common.h"
 #include "MainWindow.h"
 #include "NetworkManager.h"
@@ -11,6 +12,13 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     QApplication::setApplicationName("PointCloudViewer");
     QApplication::setApplicationVersion("1.0.0");
+
+#ifdef __GNUC__
+    auto config_file_path = "../config/setting.yaml";
+#else
+    auto config_file_path = "./config/setting.yaml";
+#endif
+    Config::setParameterFile(config_file_path);
 
     qRegisterMetaType<Point>("Point");
     qRegisterMetaType<PointArray>("PointArray");
@@ -26,6 +34,7 @@ int main(int argc, char* argv[]) {
     statusinfo_manager->setPortNum(9697);
 
     MainWindow main_window;
+    main_window.initConfig();
     main_window.setMinimumSize(800, 600);  //graphic_context bugs!
     main_window.setPointCloudManager(pointcloud_manager.take());
     main_window.setStatusInfoManager(statusinfo_manager.take());

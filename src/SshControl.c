@@ -154,7 +154,8 @@ int excute_remote_cmd(ssh_session session, const char* cmd)
 	return SSH_OK;
 }
 
-int execute_ssh_cmd(const char* cmd) {
+int execute_ssh_cmd(const char* ip_address, const char* usr_name,
+                    const char* password, const char* cmd) {
 	ssh_session my_ssh_session;
 	int rc;
 
@@ -164,8 +165,8 @@ int execute_ssh_cmd(const char* cmd) {
 	my_ssh_session = ssh_new();
 	if (my_ssh_session == NULL)
 		exit(-1);
-	ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, "192.168.0.148");
-	ssh_options_set(my_ssh_session, SSH_OPTIONS_USER, "zhihui");
+	ssh_options_set(my_ssh_session, SSH_OPTIONS_HOST, ip_address);
+	ssh_options_set(my_ssh_session, SSH_OPTIONS_USER, usr_name);
 	ssh_options_set(my_ssh_session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity);
 	ssh_options_set(my_ssh_session, SSH_OPTIONS_PORT, &port);
 	rc = ssh_connect(my_ssh_session);
@@ -186,7 +187,7 @@ int execute_ssh_cmd(const char* cmd) {
 
 	// Authenticate ourselves
 	//password = getpass("Password: ");
-	rc = ssh_userauth_password(my_ssh_session, NULL, "123456");
+	rc = ssh_userauth_password(my_ssh_session, NULL, password);
 	if (rc != SSH_AUTH_SUCCESS)
 	{
 		fprintf(stderr, "Error authenticating with password: %s\n",

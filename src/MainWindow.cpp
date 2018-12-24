@@ -17,13 +17,14 @@
 #include <functional>
 
 #include "Common.h"
+#include "Config.h"
 #include "OSGWidget.h"
 #include "MainWindow.h"
 #include "NetworkManager.h"
 extern "C"{
 #include "SshControl.h"
 }
-#include "3rdparty/pointcloud_expplore.h"
+#include "PointcloudConvert.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dock_widget_(nullptr),
     tree_widget_(nullptr),
     open_file_action(nullptr),
+    connect_action(nullptr),
     start_action(nullptr),
     end_action(nullptr),
     convert_action(nullptr),
@@ -59,6 +61,10 @@ void MainWindow::createMenu() {
     open_file_action->setIcon(QIcon(":/images/file_open.png"));
     connect(open_file_action, SIGNAL(triggered()), this, SLOT(openFile()));
 
+    connect_action = new QAction(QStringLiteral("连接"), this);
+    connect_action->setIcon(QIcon(":/images/connection.png"));
+    connect(connect_action, SIGNAL(triggered()), this, SLOT(connectTriggered()));
+
     start_action = new QAction(QStringLiteral("开始"), this);
     start_action->setIcon(QIcon(":/images/start.png"));
     connect(start_action, SIGNAL(triggered()), this, SLOT(startTriggered()));
@@ -75,6 +81,10 @@ void MainWindow::createMenu() {
 void MainWindow::createToolBar() {
     QToolBar *toolBar = addToolBar("Tools");
     //toolBar->addAction(open_file_action);
+
+    toolBar->addAction(connect_action);
+    toolBar->addSeparator();
+
     toolBar->addAction(start_action);
     toolBar->addSeparator();
 
@@ -186,8 +196,15 @@ void MainWindow::updateRTKStatus(bool is_valid) {
     rtk_item->setCheckState(0, check_state);
 }
 
+void MainWindow::connectTriggered() {
+    int result = execute_ssh_cmd(ip_address_.c_str(), usr_name_.c_str(), password_.c_str(), connect_cmd_.c_str());
+    if (result == 0) {
+        QMessageBox::information(NULL, "Info", QStringLiteral("连接成功"), QMessageBox::Yes);
+    }
+    //execute_ssh_cmd("./start.sh");
+}
 void MainWindow::startTriggered() {
-	int result = execute_ssh_cmd("ls");
+	int result = execute_ssh_cmd(ip_address_.c_str(), usr_name_.c_str(), password_.c_str(), start_cmd_.c_str());
 	if (result == 0) {
 		QMessageBox::information(NULL, "Info", QStringLiteral("开启成功"), QMessageBox::Yes);
 	}
@@ -195,7 +212,7 @@ void MainWindow::startTriggered() {
 }
 
 void MainWindow::endTriggered() {
-	int result = execute_ssh_cmd("pwd");
+	int result = execute_ssh_cmd(ip_address_.c_str(), usr_name_.c_str(), password_.c_str(), end_cmd_.c_str());
 	if (result == 0) {
 		QMessageBox::information(NULL, "Info", QStringLiteral("关闭成功"), QMessageBox::Yes);
 	}
@@ -217,4 +234,17 @@ void MainWindow::convertTriggered() {
     std::thread thread1(ConvertToLas, dir_path_str, callback);
     thread1.detach();
     std::cout << "get bag dir: " << dir_path_str << std::endl;
+}
+
+void MainWindow::initConfig() {
+    auto init = [&](std::string& parm, const std::string& name) {
+        parm = Config::get<std::string>(name);
+    };
+
+    init(ip_address_, "ip_address");
+    init(usr_name_, "usr_name");
+    init(password_, "password");
+    init(connect_cmd_, "connect_bash_file_path");
+    init(start_cmd_, "start_bash_file_path");
+    init(end_cmd_, "end_bash_file_path");
 }
