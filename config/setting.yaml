@@ -19,4 +19,3 @@ lidar_y: 0
 lidar_z: 0.02571
 lidar_delay: 30
 lidar_period: 80
-
