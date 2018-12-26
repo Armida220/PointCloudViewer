@@ -40,7 +40,7 @@ void NetworkManager::getDracoPointCloudData() {
 
     draco::DecoderBuffer draco_buffer;
     draco_buffer.Init(udp_buffer.data(), udp_buffer.size());
-    std::cout << this->objectName().toStdString() << "receive udp buffer size: " << udp_buffer.size() << std::endl;
+    std::cout << this->objectName().toStdString() << " receive udp buffer size: " << udp_buffer.size() << std::endl;
 
     std::unique_ptr<draco::PointCloud> draco_point_cloud;
     auto type_statusor = draco::Decoder::GetEncodedGeometryType(&draco_buffer);
