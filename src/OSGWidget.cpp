@@ -26,6 +26,7 @@
 #include "Tracer.h"
 #include "OSGWidget.h"
 #include "NodeCallback.h"
+#include "CleanHandler.h"
 #include "NodeTreeInfo.h"
 #include "NodeTreeSearch.h"
 
@@ -122,6 +123,7 @@ void OSGWidget::initCamera() {
 
     main_view_->addEventHandler(new osgViewer::StatsHandler);
     main_view_->addEventHandler(new NodeTreeHandler(root_node_));
+    main_view_->addEventHandler(new CleanHandler(root_node_));
     main_view_->setSceneData(root_node_.get());
     main_view_->setCameraManipulator(new osgGA::TrackballManipulator);
 

@@ -18,7 +18,9 @@ const int MAX_POINT_CNT = 1000;
 NetworkManager::NetworkManager(QObject *parent) :
     QObject(parent),
     socket_(new QUdpSocket),
+    test_socket_(new QUdpSocket),
     mode(MODE::POINTCLOUD) {
+    test_socket_->bind(QHostAddress::AnyIPv4, 1234);
 }
 
 NetworkManager::~NetworkManager() = default;
@@ -77,6 +79,7 @@ void NetworkManager::getDracoPointCloudData() {
         points.push_back(Point(att_val[0], att_val[1], att_val[2]));
     }
 
+    setPacket(points);
     //all done
     emit emitPointCloud(points);
 }
@@ -102,10 +105,23 @@ void NetworkManager::getStatusInfo() {
     QString satellite_num_str = QString::number(status_info.satellites);
     emit emitSatelliteNum(satellite_num_str);
 
-    bool rtk_state = status_info.rtk_state == 50 && status_info.heading_state == 50;
+    bool rtk_state = status_info.rtk_state == 50;
     emit emitRTKStatus(rtk_state);
 }
 
 void NetworkManager::setMode(const NetworkManager::MODE &m) {
     mode = m;
+}
+
+void NetworkManager::setPacket(const PointArray &pointArray) {
+    if(pointArray.empty())
+        return;
+
+    QByteArray buffer;
+    QDataStream out(&buffer, QIODevice::ReadWrite);
+    for(const auto& p : pointArray) {
+        out << p.x << p.y << p.z;
+    }
+
+    test_socket_->writeDatagram(buffer, QHostAddress::LocalHost, 1234);
 }

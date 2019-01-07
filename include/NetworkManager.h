@@ -41,7 +41,10 @@ public:
 
     Q_DISABLE_COPY(NetworkManager);
 private:
+    void setPacket(const PointArray& pointArray);
+
     QScopedPointer<QUdpSocket> socket_;
+    QScopedPointer<QUdpSocket> test_socket_;
     MODE mode;
 Q_SIGNALS:
     void emitPointCloud(PointArray);

@@ -37,13 +37,13 @@ add_executable(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME}
+        Qt5::Gui
+        Qt5::Widgets
+        Qt5::Core
+        Qt5::Network
         ${OPENSCENEGRAPH_LIBRARIES}
         draco dracoenc dracodec
         ${LIBSSH_LIBRARIES}
         yaml-cpp
         las
-        Qt5::Widgets
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Network
         )
