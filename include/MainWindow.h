@@ -63,7 +63,9 @@ private:
     enum TREE_WIDGET_ITEM {
         GPS_LOCATION,
         SATELLITE_NUM,
-        RTK_STATUS
+        RTK_STATUS,
+        GPS_LOCK,
+        KINETIC
     };
 
     //items
@@ -88,6 +90,8 @@ public Q_SLOTS:
     void updateGPSLocation(Point);
     void updateSatelliteNum(QString);
     void updateRTKStatus(bool);
+    void updateGPSLock(bool);
+    void updateKineticAligment(bool);
 
     void connectTriggered();
     void startTriggered();

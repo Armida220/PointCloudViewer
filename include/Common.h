@@ -52,6 +52,8 @@ typedef struct GpsMsgs{
     int satellites;
     int rtk_state;
     int heading_state;
+    bool gps_lock;
+    bool kinetic_alignment;
 } GpsMsgs_t;
 
 struct Point {

@@ -52,6 +52,8 @@ Q_SIGNALS:
     void emitGPSLocation(Point);
     void emitSatelliteNum(QString);
     void emitRTKStatus(bool);
+    void emitGPSLock(bool);
+    void emitKineticAlignment(bool);
 
 private Q_SLOTS:
     void getDracoPointCloudData();

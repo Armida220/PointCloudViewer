@@ -107,6 +107,10 @@ void NetworkManager::getStatusInfo() {
 
     bool rtk_state = status_info.rtk_state == 50;
     emit emitRTKStatus(rtk_state);
+
+    emit emitGPSLock(status_info.gps_lock);
+
+    emit emitKineticAlignment(status_info.kinetic_alignment);
 }
 
 void NetworkManager::setMode(const NetworkManager::MODE &m) {

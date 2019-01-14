@@ -332,7 +332,7 @@ osg::Vec3d OSGWidget::calculateColorForPoint(const osg::Vec3d &point) const {
             };
     const int distance_range = 30;
 
-    double distance = point.length();
+    double distance = point.z();
     int range = static_cast<int>(distance) / distance_range;
     if(range >= Colors.size()) range = Colors.size() - 1;
     if(range == 0) range = 1;

@@ -15,6 +15,8 @@
 
 #include <thread>
 #include <functional>
+#include <include/MainWindow.h>
+
 
 #include "Common.h"
 #include "Config.h"
@@ -122,6 +124,17 @@ void MainWindow::createDockWidget() {
 		item->setCheckState(0, Qt::CheckState::Unchecked);
 	}
 
+    //GPS lock
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("GPS锁定")));
+        item->setCheckState(0, Qt::CheckState::Unchecked);
+    }
+
+    //Kinetic Aligment
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem(tree_widget_, QStringList(QStringLiteral("Kinetic对齐")));
+        item->setCheckState(0, Qt::CheckState::Unchecked);
+    }
 
     dock_widget_ = new QDockWidget(QStringLiteral("无人机状态"), this);
     dock_widget_->setFixedWidth(200);
@@ -141,6 +154,8 @@ void MainWindow::createConnect() {
     QObject::connect(statusinfo_manager_.data(), SIGNAL(emitGPSLocation(Point)), this, SLOT(updateGPSLocation(Point)));
     QObject::connect(statusinfo_manager_.data(), SIGNAL(emitSatelliteNum(QString)), this, SLOT(updateSatelliteNum(QString)));
     QObject::connect(statusinfo_manager_.data(), SIGNAL(emitRTKStatus(bool)), this, SLOT(updateRTKStatus(bool)));
+    QObject::connect(statusinfo_manager_.data(), SIGNAL(emitGPSLock(bool)), this, SLOT(updateGPSLock(bool)));
+    QObject::connect(statusinfo_manager_.data(), SIGNAL(emitKineticAlignment(bool)), this, SLOT(updateKineticAligment(bool)));
 
     QObject::connect(pointcloud_manager_.data(), SIGNAL(emitPointCloud(PointArray)), osgwidget_, SLOT(updatePointCloud(PointArray)));
 }
@@ -194,6 +209,20 @@ void MainWindow::updateRTKStatus(bool is_valid) {
 
     auto check_state = is_valid ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
     rtk_item->setCheckState(0, check_state);
+}
+
+void MainWindow::updateGPSLock(bool is_valid) {
+    auto item = tree_widget_->topLevelItem(GPS_LOCK);
+
+    auto check_state = is_valid ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
+    item->setCheckState(0, check_state);
+}
+
+void MainWindow::updateKineticAligment(bool is_valid) {
+    auto item = tree_widget_->topLevelItem(KINETIC);
+
+    auto check_state = is_valid ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
+    item->setCheckState(0, check_state);
 }
 
 void MainWindow::connectTriggered() {
