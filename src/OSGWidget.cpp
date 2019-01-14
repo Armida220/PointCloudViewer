@@ -280,6 +280,7 @@ void OSGWidget::updateUAVPose(Point pos) {
     position.y() = pos.y;
     position.z() = pos.z;
 
+    cur_position = position;
     uav_node->setPosition(position);
 
     QString position_str = QString::number(pos.x) + "," +
@@ -330,10 +331,10 @@ osg::Vec3d OSGWidget::calculateColorForPoint(const osg::Vec3d &point) const {
               osg::Vec3(0.4, 1.0, 0.0), osg::Vec3(0.6, 1.0, 0.0), osg::Vec3(0.8, 1.0, 0.0), osg::Vec3(1.0, 1.0, 0.0), osg::Vec3(1.0, 0.8, 0.0), osg::Vec3(1.0, 0.6, 0.0),
               osg::Vec3(1.0, 0.4, 0.0), osg::Vec3(1.0, 0.2, 0.0), osg::Vec3(1.0, 0.0, 0.0)
             };
-    const int distance_range = 30;
+    const int height_range = 5;
 
-    double distance = point.z();
-    int range = static_cast<int>(distance) / distance_range;
+    double height = std::abs(point.z() - cur_position.z());
+    int range = static_cast<int>(height) / height_range;
     if(range >= Colors.size()) range = Colors.size() - 1;
     if(range == 0) range = 1;
 

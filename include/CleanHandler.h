@@ -45,7 +45,7 @@ public:
 
         switch (ea.getEventType()) {
             case(osgGA::GUIEventAdapter::KEYDOWN) :
-                if (ea.getKey() == 'c')
+                if (ea.getKey() == osgGA::GUIEventAdapter::KEY_C)
                 {
                     static osg::ref_ptr<osg::Switch> point_cloud_node = dynamic_cast<osg::Switch*>(
                             NodeTreeSearch::findNodeWithName(root_node_, point_cloud_node_name));

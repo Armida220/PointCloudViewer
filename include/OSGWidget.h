@@ -70,6 +70,7 @@ private:
     osg::ref_ptr<osg::Switch>      text_node_;
 
     QScopedPointer<QTimer> update_timer_;
+    osg::Vec3d cur_position;
 
 public Q_SLOTS:
     void updateUAVPose(Point);
